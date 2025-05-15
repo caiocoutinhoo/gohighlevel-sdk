@@ -10,8 +10,8 @@ from highlevel_sdk.date import *
 
 class GoHighLevelAPI:
     """
-    Interface para comunicação com a API do GoHighLevel.
-    Responsável por realizar requisições e retornar dados.
+    Interface for communication with the GoHighLevel API.
+    Responsible for making requests and returning data in a standardized format.
     """
     def __init__(self, token: str, id_location: str):
         self.token_data = {"access_token": token}
@@ -21,10 +21,10 @@ class GoHighLevelAPI:
 
     def get_users(self):
         """
-        Realiza a requisição à API para buscar usuários.
+        Fetches users data from the API.
         
         Returns:
-            list: Lista de dicionários com os dados dos usuários.
+            list: List of dictionaries containing user data.
         """
         try:
             data_users = self.location_obj.get_users()
@@ -35,24 +35,24 @@ class GoHighLevelAPI:
     
     def get_custom_fields(self):
         """
-        Realiza a requisição à API para buscar usuários.
+        Fetches custom fields data from the API.
         
         Returns:
-            list: Lista de dicionários com os dados dos usuários.
+            list: List of dictionaries containing custom fields data.
         """
         try:
             data_cs = self.location_obj.get_custom_fields()
             return data_cs
         except Exception as e:
-            log.error(f"Error fetching users: {e}")
+            log.error(f"Error fetching custom fields: {e}")
             return []
     
     def get_custom_values(self):
         """
-        Realiza a requisição à API para buscar usuários.
+        Fetches custom field values from the API.
         
         Returns:
-            list: Lista de dicionários com os dados dos usuários.
+            list: List of dictionaries containing custom field values data.
         """
         data_cv = self.location_obj.get_custom_values()
         try:
@@ -63,10 +63,14 @@ class GoHighLevelAPI:
     
     def get_calendars_events(self, date, users):
         """
-        Realiza a requisição à API para buscar eventos de calendários.
+        Fetches calendar events from the API for specified users and date range.
         
+        Args:
+            date: Reference date for the query
+            users: List of user objects containing IDs
+            
         Returns:
-            list: Lista de dicionários com os dados dos eventos dos calendários.
+            list: List of dictionaries containing calendar events data.
         """
         data_calendars = []
         try:
@@ -89,10 +93,10 @@ class GoHighLevelAPI:
 
     def get_pipelines(self):
         """
-        Realiza a requisição à API para buscar pipelines.
+        Fetches pipelines data from the API.
         
         Returns:
-            list: Lista de dicionários com os dados dos pipelines.
+            list: List of dictionaries containing pipelines data.
         """
         data_pipelines = self.location_obj.get_pipelines()
         try:
@@ -103,10 +107,10 @@ class GoHighLevelAPI:
 
     def get_contacts(self):
         """
-        Realiza a requisição à API para buscar contatos.
+        Fetches contacts data from the API with a default limit of 100 records.
         
         Returns:
-            list: Lista de dicionários com os dados dos contatos.
+            list: List of dictionaries containing contacts data.
         """
         try:
             contacts_cursor = self.location_obj.get_contacts(limit=100)
@@ -121,10 +125,10 @@ class GoHighLevelAPI:
 
     def get_opportunities(self):
         """
-        Realiza a requisição à API para buscar oportunidades.
+        Fetches opportunities data from the API with a default limit of 100 records.
         
         Returns:
-            list: Lista de dicionários com os dados das oportunidades.
+            list: List of dictionaries containing opportunities data.
         """
         try:
             data_opportunities = self.location_obj.get_opportunities(limit=100)
@@ -139,17 +143,17 @@ class GoHighLevelAPI:
     
 class UserDataExtractor:
     """
-    Responsável por extrair dados específicos de cada usuário e retornar em formato estruturado.
+    Responsible for extracting specific data from user objects and returning them in a structured format.
     """
     def __init__(self, data: list):
         self.data = data
 
     def extract(self):
         """
-        Extrai dados específicos e os organiza em formato de dicionário para DataFrame.
+        Extracts specific user data and organizes it into a dictionary format suitable for DataFrame conversion.
 
         Returns:
-            list: Lista de dicionários com as informações necessárias dos usuários.
+            list: List of dictionaries containing essential user information.
         """
         user_data = []
         for user in self.data:
@@ -165,22 +169,22 @@ class UserDataExtractor:
 
 class CustomFieldsExtractor:
     """
-    Responsável por extrair dados importantes dos custom fields e retornar em formato estruturado.
+    Responsible for extracting key data from custom fields and returning them in a structured format.
     """
     def __init__(self, data: list):
         self.data = data
 
     def extract(self):
         """
-        Extrai dados importantes de cada campo personalizado e organiza em formato de dicionário para DataFrame.
+        Extracts important data from each custom field and organizes them into a dictionary format for DataFrame conversion.
 
         Returns:
-            list: Lista de dicionários com as informações dos campos personalizados.
+            list: List of dictionaries containing custom fields information.
         """
         custom_fields_data = []
 
         for field in self.data:
-            # Acessando os dados do campo
+            # Accessing field data
             field_info = {
                 'id': field.get('id', None),
                 'name': field.get('name', None),
@@ -197,25 +201,25 @@ class CustomFieldsExtractor:
 
 class CalendarDataExtractor:
     """
-    Responsável por extrair dados específicos de cada evento de calendário e retornar em formato estruturado.
+    Responsible for extracting specific data from calendar events and returning them in a structured format.
     """
     def __init__(self, data: list):
         self.data = data
 
     def extract(self):
         """
-        Extrai dados importantes de cada evento e organiza em formato de dicionário para DataFrame.
+        Extracts important data from each calendar event and organizes it into a dictionary format for DataFrame conversion.
 
         Returns:
-            list: Lista de dicionários com as informações dos eventos.
+            list: List of dictionaries containing calendar events information.
         """
         calendar_data = []
 
         for event in self.data:
-            # Acessando o dicionário interno _data
+            # Accessing the internal _data dictionary
             event_data = event._data if hasattr(event, '_data') else {}
 
-            # Extraindo os dados importantes de cada evento diretamente do dicionário _data
+            # Extracting important data from each event directly from the _data dictionary
             event_info = {
                 'event_id': event_data.get('id', None),
                 'title': event_data.get('title', None),
@@ -235,27 +239,27 @@ class CalendarDataExtractor:
 
 class CustomValuesExtractor:
     """
-    Responsável por extrair dados importantes dos custom values e retornar em formato estruturado.
+    Responsible for extracting key data from custom field values and returning them in a structured format.
     """
     def __init__(self, data: list):
         self.data = data
 
     def extract(self):
         """
-        Extrai dados importantes de cada custom value e organiza em formato de dicionário para DataFrame.
+        Extracts important data from each custom value and organizes it into a dictionary format for DataFrame conversion.
 
         Returns:
-            list: Lista de dicionários com as informações dos custom values.
+            list: List of dictionaries containing custom values information.
         """
         custom_values_data = []
 
         for field in self.data:
-            # Acessando os dados do custom value
+            # Accessing custom value data
             field_info = {
                 'id': field.get('id', None),
                 'name': field.get('name', None),
                 'field_key': field.get('fieldKey', None),
-                'value': field.get('value', None),  # Pode não estar presente em todos os casos
+                'value': field.get('value', None),  # May not be present in all cases
             }
             custom_values_data.append(field_info)
 
@@ -263,38 +267,38 @@ class CustomValuesExtractor:
 
 class DataFrameFormatter:
     """
-    Formata os dados extraídos em um DataFrame para fácil visualização.
+    Formats extracted data into a DataFrame for easy visualization and analysis.
     """
     def __init__(self, data_list: list):
         self.data = data_list
 
     def to_dataframe(self):
         """
-        Converte a lista de dados extraídos para um DataFrame.
+        Converts the list of extracted data to a DataFrame.
 
         Returns:
-            pd.DataFrame: DataFrame contendo os dados dos usuários.
+            pd.DataFrame: DataFrame containing the structured data.
         """
         return pd.DataFrame(self.data)
 
 class PipelinesExtractor:
     """
-    Responsável por extrair dados importantes dos pipelines e seus estágios (stages).
+    Responsible for extracting key data from pipelines and their stages.
     """
     def __init__(self, data: list):
         self.data = data
 
     def extract(self):
         """
-        Extrai dados importantes de cada pipeline e seus estágios, e organiza em formato de dicionário para DataFrame.
+        Extracts important data from each pipeline and its stages, and organizes it into a dictionary format for DataFrame conversion.
 
         Returns:
-            list: Lista de dicionários com as informações dos pipelines e estágios.
+            list: List of dictionaries containing pipeline stages information with references to their parent pipelines.
         """
         pipelines_data = []
 
         for pipeline in self.data:
-            # Extraindo informações do pipeline
+            # Extracting pipeline information
             pipeline_info = {
                 'pipeline_id': pipeline.get('id', None),
                 'pipeline_name': pipeline.get('name', None),
@@ -302,7 +306,7 @@ class PipelinesExtractor:
                 'date_updated': pipeline.get('dateUpdated', None)
             }
 
-            # Extraindo os estágios (stages) do pipeline
+            # Extracting pipeline stages
             for stage in pipeline.get('stages', []):
                 stage_info = {
                     'stage_id': stage.get('id', None),
@@ -310,8 +314,8 @@ class PipelinesExtractor:
                     'position': stage.get('position', None),
                     'show_in_funnel': stage.get('showInFunnel', None),
                     'show_in_pie_chart': stage.get('showInPieChart', None),
-                    'pipeline_id': pipeline_info['pipeline_id'],  # Adicionando o ID do pipeline para referência
-                    'pipeline_name': pipeline_info['pipeline_name']  # Adicionando o nome do pipeline
+                    'pipeline_id': pipeline_info['pipeline_id'],  # Adding pipeline ID for reference
+                    'pipeline_name': pipeline_info['pipeline_name']  # Adding pipeline name
                 }
 
                 pipelines_data.append(stage_info)
@@ -320,27 +324,27 @@ class PipelinesExtractor:
 
 class ContactsExtractor:
     """
-    Responsável por extrair dados importantes dos contatos e organizá-los em formato estruturado.
+    Responsible for extracting key data from contacts and organizing them into a structured format.
     """
     def __init__(self, data: list):
         self.data = data
 
     def extract(self):
         """
-        Extrai os dados importantes de cada contato e organiza em formato de dicionário para DataFrame.
+        Extracts important data from each contact and organizes it into dictionary formats for DataFrame conversion.
 
         Returns:
             tuple: 
-                - lista de dicionários com as informações dos contatos.
-                - lista de dicionários com as atribuições separadas.
-                - lista de dicionários com os campos personalizados (custom fields) separados.
+                - List of dictionaries with contact information
+                - List of dictionaries with attribution data
+                - List of dictionaries with custom fields data
         """
         contacts_data = []
         attributions_data = []
         custom_fields_data = []
 
         for contact in self.data:
-            # Extraindo informações gerais do contato
+            # Extracting general contact information
             contact_info = {
                 'id': contact.get('id', None),
                 'contact_name': contact.get('contactName', None),
@@ -354,33 +358,33 @@ class ContactsExtractor:
             }
             contacts_data.append(contact_info)
 
-            # Processando as Attributions (caso existam)
+            # Processing attributions (if any)
             attributions = contact.get('attributions', [])
             for idx, attribution in enumerate(attributions):
                 attribution_info = {
-                    'id': uuid.uuid4(),  # Gerando UUID único para cada atribuição
-                    'id_association': contact_info['id'],  # Associando a atribuição ao contato
-                    'type': 'Contact',  # Tipo da origem
+                    'id': uuid.uuid4(),  # Generating unique UUID for each attribution
+                    'id_association': contact_info['id'],  # Associating attribution with contact
+                    'type': 'Contact',  # Source type
                     'medium': attribution.get('medium', None),
                     'utmSource': attribution.get('utmSource', None),
                     'utmCampaign': attribution.get('utmCampaign', None),
                     'utmContent': attribution.get('utmContent', None),
                     'utmFbclid': attribution.get('utmFbclid', None),
                     'utmSessionSource': attribution.get('utmSessionSource', None),
-                    'url': attribution.get('url', None),  # URL da atribuição
+                    'url': attribution.get('url', None),  # Attribution URL
                 }
                 attributions_data.append(attribution_info)
 
-            # Processando os Custom Fields (caso existam)
+            # Processing custom fields (if any)
             custom_fields = contact.get('customFields', [])
             for field in custom_fields:
                 field_key = field.get('id', None)
                 field_value = field.get('value', None)
 
-                if isinstance(field_value, list):  # Caso o valor seja uma lista, converta para string
+                if isinstance(field_value, list):  # If value is a list, convert to string
                     field_value = ", ".join(field_value)
 
-                # Adicionando os custom fields à lista separada
+                # Adding custom fields to the separate list
                 custom_fields_data.append({
                     'contact_id': contact_info['id'],
                     'field_id': field_key,
@@ -391,23 +395,25 @@ class ContactsExtractor:
 
 class OpportunityExtractor:
     """
-    Responsável por extrair dados importantes das oportunidades e organizá-los em formato estruturado.
+    Responsible for extracting key data from opportunities and organizing them into a structured format.
     """
     def __init__(self, data: list):
         self.data = data
 
     def extract(self):
         """
-        Extrai os dados importantes de cada oportunidade e organiza em formato de dicionário para DataFrame.
+        Extracts important data from each opportunity and organizes it into dictionary formats for DataFrame conversion.
 
         Returns:
-            list: Lista de dicionários com as informações das oportunidades.
+            tuple:
+                - List of dictionaries with opportunity information
+                - List of dictionaries with attribution data
         """
         opportunities_data = []
         attributions_data = []
 
         for opportunity in self.data:
-            # Extraindo informações da oportunidade
+            # Extracting opportunity information
             opportunity_info = {
                 'assignedTo': opportunity.get('assignedTo', None),
                 'contactId': opportunity.get('contactId', None),
@@ -425,20 +431,20 @@ class OpportunityExtractor:
             }
             opportunities_data.append(opportunity_info)
 
-            # Processando as Attributions (caso existam)
+            # Processing attributions (if any)
             attributions = opportunity.get('attributions', [])
             for idx, attribution in enumerate(attributions):
                 attribution_info = {
-                    'id': uuid.uuid4(),  # Índice da atribuição
-                    'id_association': opportunity_info['id'],  # Associando a atribuição à oportunidade
-                    'type': 'Opportunity',  # Tipo da origem
+                    'id': uuid.uuid4(),  # Unique identifier for attribution
+                    'id_association': opportunity_info['id'],  # Associating attribution with opportunity
+                    'type': 'Opportunity',  # Source type
                     'medium': attribution.get('medium', None),
                     'utmSource': attribution.get('utmSource', None),
                     'utmCampaign': attribution.get('utmCampaign', None),
                     'utmContent': attribution.get('utmContent', None),
                     'utmFbclid': attribution.get('utmFbclid', None),
                     'utmSessionSource': attribution.get('utmSessionSource', None),
-                    'url': attribution.get('url', None),  # URL da atribuição
+                    'url': attribution.get('url', None),  # Attribution URL
                 }
                 attributions_data.append(attribution_info)
 
@@ -446,7 +452,7 @@ class OpportunityExtractor:
 
 class GoHighLevelService:
     """
-    Serviço principal que orquestra a requisição, extração e formatação dos dados.
+    Main service that orchestrates the request, extraction, and formatting of data from GoHighLevel API.
     """
     def __init__(self, token: str, id_location: str):
         self.api = GoHighLevelAPI(token, id_location)
@@ -456,10 +462,10 @@ class GoHighLevelService:
 
     def get_users_dataframe(self):
         """
-        Obtém os dados dos usuários em formato de DataFrame.
+        Retrieves user data and converts it to a DataFrame.
 
         Returns:
-            pd.DataFrame: DataFrame com os dados dos usuários.
+            pd.DataFrame: DataFrame containing user data.
         """
         users = self.api.get_users()
         if users:
@@ -468,14 +474,17 @@ class GoHighLevelService:
             formatter = DataFrameFormatter(self.user_list)
             return formatter.to_dataframe()
           
-        return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
+        return pd.DataFrame()  # Returns empty DataFrame in case of error
       
     def get_calendars_events_dataframe(self, date):
         """
-        Obtém os eventos dos calendários em formato de DataFrame.
+        Retrieves calendar events and converts them to a DataFrame.
+
+        Args:
+            date: Reference date for the query
 
         Returns:
-            pd.DataFrame: DataFrame com os eventos dos calendários.
+            pd.DataFrame: DataFrame containing calendar events.
         """
         try:
             calendars = self.api.get_calendars_events(date, self.user_list)
@@ -492,10 +501,10 @@ class GoHighLevelService:
     
     def get_custom_fields_dataframe(self):
         """
-        Obtém os campos personalizados em formato de DataFrame.
+        Retrieves custom fields data and converts it to a DataFrame.
 
         Returns:
-            pd.DataFrame: DataFrame com os campos personalizados.
+            pd.DataFrame: DataFrame containing custom fields data.
         """
         try:
             custom_fields = self.api.get_custom_fields()
@@ -513,10 +522,10 @@ class GoHighLevelService:
     
     def get_custom_values_dataframe(self):
         """
-        Obtém os valores dos campos personalizados em formato de DataFrame.
+        Retrieves custom field values data and converts it to a DataFrame.
 
         Returns:
-            pd.DataFrame: DataFrame com os valores dos campos personalizados.
+            pd.DataFrame: DataFrame containing custom field values.
         """
         try:
             custom_values = self.api.get_custom_values()
@@ -528,15 +537,15 @@ class GoHighLevelService:
               
             return pd.DataFrame()  
         except Exception as e:
-            log.error(f"Error fetching custom fields: {e}")
+            log.error(f"Error fetching custom values: {e}")
             return pd.DataFrame()
     
     def get_pipelines_dataframe(self):
         """
-        Obtém os pipelines em formato de DataFrame.
+        Retrieves pipeline data and converts it to a DataFrame.
 
         Returns:
-            pd.DataFrame: DataFrame com os pipelines.
+            pd.DataFrame: DataFrame containing pipeline stages data.
         """
         try:
             pipelines = self.api.get_pipelines()
@@ -553,10 +562,11 @@ class GoHighLevelService:
 
     def get_contacts_dataframe(self):
         """
-        Obtém os contatos em formato de DataFrame.
+        Retrieves contacts data and converts it to a DataFrame.
+        Also processes and stores attributions and custom field values.
 
         Returns:
-            pd.DataFrame: DataFrame com os contatos.
+            pd.DataFrame: DataFrame containing contacts data.
         """
         try:
             contacts = self.api.get_contacts()
@@ -574,10 +584,11 @@ class GoHighLevelService:
     
     def get_opportunities_dataframe(self):
         """
-        Obtém as oportunidades em formato de DataFrame.
+        Retrieves opportunities data and converts it to a DataFrame.
+        Also processes and stores attributions data.
 
         Returns:
-            pd.DataFrame: DataFrame com as oportunidades.
+            pd.DataFrame: DataFrame containing opportunities data.
         """
         try:
             opportunities = self.api.get_opportunities()
@@ -595,10 +606,10 @@ class GoHighLevelService:
 
     def get_attributions_dataframe(self):
         """
-        Obtém as atribuições em formato de DataFrame.
+        Retrieves stored attributions and converts them to a DataFrame.
 
         Returns:
-            pd.DataFrame: DataFrame com as atribuições.
+            pd.DataFrame: DataFrame containing attributions data.
         """
         try:
             if self.atributions_list:
@@ -613,10 +624,10 @@ class GoHighLevelService:
 
     def get_custom_field_values_dataframe(self):
         """
-        Obtém os valores dos campos personalizados em formato de DataFrame.
+        Retrieves stored custom field values and converts them to a DataFrame.
 
         Returns:
-            pd.DataFrame: DataFrame com os valores dos campos personalizados.
+            pd.DataFrame: DataFrame containing custom field values data.
         """
         try:
             if self.custom_field_values_list:
@@ -630,10 +641,10 @@ class GoHighLevelService:
 
     def _set_atributions(self, data):
         """
-        Define as atribuições para o objeto.
+        Sets or updates attributions data for the object.
 
         Args:
-            data (list): Lista de atribuições.
+            data (list): List of attribution dictionaries to be stored.
         """
         if self.atributions_list:
             self.atributions_list.extend(data)
@@ -641,4 +652,3 @@ class GoHighLevelService:
         if not self.atributions_list:
             self.atributions_list = data
             log.info(f"Attributions list set: {self.atributions_list}")
-        
